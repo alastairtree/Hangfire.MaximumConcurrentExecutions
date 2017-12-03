@@ -5,4 +5,18 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="hangfire.aspnetcore" Version="1.6.17" />
+    <PackageReference Include="hangfire.sqlserver" Version="1.6.17" />
+    <PackageReference Include="microsoft.aspnetcore" Version="2.0.1" />
+    <PackageReference Include="microsoft.aspnetcore.all" Version="2.0.3" />
+    <PackageReference Include="microsoft.extensions.logging" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

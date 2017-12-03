@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Hangfire.MaxConcurrentExecutions
 {
@@ -6,7 +7,13 @@ namespace Hangfire.MaxConcurrentExecutions
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .Build();
+
+            host.Run();
         }
     }
 }

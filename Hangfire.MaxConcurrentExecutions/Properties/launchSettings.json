@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Hangfire.MaxConcurrentExecutions": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
