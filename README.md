@@ -1,14 +1,19 @@
 Hnagfire.MaximumConcurrentExecutions
 ====================================
 
-Extend [hangfire.io](https://github.com/HangfireIO/Hangfire) with an additional job filter attribute to allow you to 
-easily throttle the number of a given job running at the same time. 
+[![GitHub issues](https://img.shields.io/github/issues/alastairtree/Hangfire.MaximumConcurrentExecutions.svg)](https://github.com/alastairtree/Hangfire.MaximumConcurrentExecutions/issues)
+[![GitHub stars](https://img.shields.io/github/stars/alastairtree/Hangfire.MaximumConcurrentExecutions.svg)](https://github.com/alastairtree/Hangfire.MaximumConcurrentExecutions/stargazers)
+[![NuGet Badge](https://buildstats.info/nuget/Hangfire.MaximumConcurrentExecutions)](https://www.nuget.org/packages/Hangfire.MaximumConcurrentExecutions)
+
+
+Extends [hangfire.io](https://github.com/HangfireIO/Hangfire) with an new MaximumConcurrentExecutions job filter attribute to allow you to 
+easily throttle the number of a given job running at the same time. Uses a distributed lock so works even under multi node environments
 
 For example 
-* Job A could have a maximum of 3 executions by decorating it with `[MaximumConcurrentExecutions(3)]` attribute
-* Job B could have a maximum of 10 executions by decorating it with `[MaximumConcurrentExecutions(10)]` attribute
+* Job A could have a maximum of 3 executions running by decorating it with `[MaximumConcurrentExecutions(3)]` attribute
+* Job B could have a maximum of 10 executions running by decorating it with `[MaximumConcurrentExecutions(10)]` attribute
 * Job C could have a maximum of 20 executions because there are 20 workers by default
-* Job D could have a maximum of 1 executions by decorating it with `[DisableConcurrentExecution]` attribute (from Hangfire.Core)
+* Job D could have a maximum of 1 executions running by decorating it with `[DisableConcurrentExecution]` attribute (from Hangfire.Core)
 
 ## Getting started
 
@@ -76,3 +81,8 @@ public class ExampleJob
     {
 	...
 ```
+
+### Known issues
+Because this implmentation relies on a polling implementation there is no fair allocation of locks once they 
+are all consumed. If the maximum job locks have been taken, there is no guarantee that the next job will get 
+the first available lock.
