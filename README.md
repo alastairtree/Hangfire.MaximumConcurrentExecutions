@@ -1,4 +1,4 @@
-Hnagfire.MaximumConcurrentExecutions
+Hangfire.MaximumConcurrentExecutions
 ====================================
 
 [![GitHub issues](https://img.shields.io/github/issues/alastairtree/Hangfire.MaximumConcurrentExecutions.svg)](https://github.com/alastairtree/Hangfire.MaximumConcurrentExecutions/issues)
@@ -83,6 +83,6 @@ public class ExampleJob
 ```
 
 ### Known issues
-Because this implmentation relies on a polling implementation there is no fair allocation of locks once they 
+Because this implementation relies on polling storage there is no fair allocation of locks once they 
 are all consumed. If the maximum job locks have been taken, there is no guarantee that the next job will get 
 the first available lock.
