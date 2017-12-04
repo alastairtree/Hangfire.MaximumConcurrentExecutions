@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright />
+    <PackageProjectUrl>https://github.com/alastairtree/Hangfire.MaximumConcurrentExecutions</PackageProjectUrl>
+    <PackageTags>hangfire throttle concurrent job jobfilter attribute jobfilterattribute filter serverfilter semaphore mutex lock distributedlock</PackageTags>
+    <RootNamespace>Hangfire</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="hangfire.core" Version="1.6.17" />
+  </ItemGroup>
+
+</Project>

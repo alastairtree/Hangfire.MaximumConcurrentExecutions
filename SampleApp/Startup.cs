@@ -1,19 +1,20 @@
-﻿using System.IO;
+﻿using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Hangfire.MaxConcurrentExecutions
+namespace SampleApp
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-
-        public static IConfigurationRoot Configuration { get; set; }
+        private static IConfigurationRoot Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHangfire(config =>
@@ -23,11 +24,12 @@ namespace Hangfire.MaxConcurrentExecutions
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env , ILoggerFactory loggerFactory)
+        // ReSharper disable once UnusedMember.Global
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddJsonFile("appsettings.json");
 
             Configuration = builder.Build();
@@ -49,15 +51,13 @@ namespace Hangfire.MaxConcurrentExecutions
 
             app.UseHangfireDashboard();
 
-            // add 2 servers
-            app.UseHangfireServer();
             app.UseHangfireServer();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
