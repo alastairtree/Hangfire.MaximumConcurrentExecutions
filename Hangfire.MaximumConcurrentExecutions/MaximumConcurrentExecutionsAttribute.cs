@@ -16,9 +16,9 @@ namespace Hangfire
         private readonly ConcurrentDictionary<string, byte> locallyAcquiredLocks =
             new ConcurrentDictionary<string, byte>();
 
-        private readonly int maxConcurrentJobs;
-        private readonly int pollingIntervalInSeconds;
-        private readonly int timeoutInSeconds;
+        protected int MaxConcurrentJobs { get; set; }
+        protected int PollingIntervalInSeconds { get; set; }
+        protected int TimeoutInSeconds { get; set; }
 
         /// <summary>
         ///     Job execution will be blocked if more than maxConcurrentJobs are running at the same time
@@ -35,12 +35,12 @@ namespace Hangfire
             if (maxConcurrentJobs <= 0) throw new ArgumentOutOfRangeException(nameof(maxConcurrentJobs));
             if (pollingIntervalInSeconds <= 0) throw new ArgumentOutOfRangeException(nameof(pollingIntervalInSeconds));
             if (timeoutInSeconds < 0) throw new ArgumentOutOfRangeException(nameof(timeoutInSeconds));
-            this.maxConcurrentJobs = maxConcurrentJobs;
-            this.timeoutInSeconds = timeoutInSeconds;
-            this.pollingIntervalInSeconds = pollingIntervalInSeconds;
+            this.MaxConcurrentJobs = maxConcurrentJobs;
+            this.TimeoutInSeconds = timeoutInSeconds;
+            this.PollingIntervalInSeconds = pollingIntervalInSeconds;
         }
 
-        public void OnPerforming(PerformingContext filterContext)
+        public virtual void OnPerforming(PerformingContext filterContext)
         {
             // use a set of locks 1,2...n to limit concurrent jobs
             // try and get the first available one, looping round all locks until we acquire one or timeout
@@ -48,16 +48,16 @@ namespace Hangfire
             // if unsucessfull to aquire before timeout then throw the DistributedLockTimeoutException
 
             var resourceSetName = GetResource(filterContext.BackgroundJob.Job);
-            var timeout = TimeSpan.FromSeconds(timeoutInSeconds);
+            var timeout = TimeSpan.FromSeconds(TimeoutInSeconds);
             var timeoutPerLock = TimeSpan.FromSeconds(0);
             var start = Stopwatch.StartNew();
 
             do
             {
-                for (var i = 1; i <= maxConcurrentJobs; i++) //non zero based - 1,2,..maxConcurrentJobs
+                for (var i = 1; i <= MaxConcurrentJobs; i++) //non zero based - 1,2,..maxConcurrentJobs
                 {
                     // name the locks sequentially e.g. Namespace.Method-1/3, Namespace.Method-2/3,Namespace.Method-3/3
-                    var resourceName = $"{resourceSetName}-{i}/{maxConcurrentJobs}";
+                    var resourceName = $"{resourceSetName}-{i}/{MaxConcurrentJobs}";
 
                     try
                     {
@@ -88,8 +88,8 @@ namespace Hangfire
 
                 // We have tried every lock once and failed so all possible jobs are in progress. 
                 // Try again after a delay otherwsie we needlessly max CPU. Sensible delay would be 1/2 of the average job duration
-                if (pollingIntervalInSeconds > 0)
-                    Task.Delay(TimeSpan.FromSeconds(pollingIntervalInSeconds)).Wait(timeout);
+                if (PollingIntervalInSeconds > 0)
+                    Task.Delay(TimeSpan.FromSeconds(PollingIntervalInSeconds)).Wait(timeout);
 
             } while (start.Elapsed < timeout);
 
@@ -97,7 +97,7 @@ namespace Hangfire
             throw new DistributedLockTimeoutException(resourceSetName);
         }
 
-        public void OnPerformed(PerformedContext filterContext)
+        public virtual void OnPerformed(PerformedContext filterContext)
         {
             if (!filterContext.Items.ContainsKey("DistributedLock"))
                 throw new InvalidOperationException("Can not release a distributed lock: it was not acquired.");
