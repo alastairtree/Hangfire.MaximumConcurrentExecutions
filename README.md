@@ -69,7 +69,7 @@ public class ExampleJob
 ### Setting the polling interval
 
 Once all available locks are taken and the maximum number of jobs are running at the same time, we must poll 
-the storage to check for released locks. As this can conume unnecessary resources you may want to configure 
+the storage to check for released locks. As this can consume unnecessary resources you may want to configure 
 how often we should retry all the availble locks. If your jobs take 2 minutes to run you should skip polling 
 more than every minute:
 
